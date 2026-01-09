@@ -37,32 +37,40 @@ export const TodoForm: React.FC = () => {
     if (!input.trim()) return;
     
     setIsEnhancing(true);
-    const enhanced = await enhanceTaskContent(input);
-    
-    if (enhanced) {
-      setInput(enhanced.title);
-      setDescription(enhanced.description);
-      
-      // Auto-save the enhanced task if DB is ready
-      if (db) {
-         try {
-            await addDoc(collection(db, 'todos'), {
-                title: enhanced.title,
-                description: enhanced.description,
-                completed: false,
-                createdAt: serverTimestamp(),
-                aiEnhanced: true
-            });
-            setInput('');
-            setDescription('');
-         } catch(e) {
-             console.error("Error saving enhanced task", e);
-         }
-      }
-    } else {
-        alert("AI enhancement failed. Check API Key or try again.");
+    try {
+        const enhanced = await enhanceTaskContent(input);
+        
+        if (enhanced) {
+          setInput(enhanced.title);
+          setDescription(enhanced.description);
+          
+          // Auto-save the enhanced task if DB is ready
+          if (db) {
+             try {
+                await addDoc(collection(db, 'todos'), {
+                    title: enhanced.title,
+                    description: enhanced.description,
+                    completed: false,
+                    createdAt: serverTimestamp(),
+                    aiEnhanced: true
+                });
+                setInput('');
+                setDescription('');
+             } catch(e) {
+                 console.error("Error saving enhanced task", e);
+             }
+          }
+        } else {
+            // If explicit error handling didn't catch it but result is null
+            console.warn("AI enhancement returned no result");
+            alert("AI enhancement failed to generate a response. Please check your network or API key.");
+        }
+    } catch (error) {
+        console.error("AI Enhancement critical error:", error);
+        alert("An error occurred while connecting to the AI service.");
+    } finally {
+        setIsEnhancing(false);
     }
-    setIsEnhancing(false);
   };
 
   const isDbReady = !!db;

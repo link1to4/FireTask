@@ -5,13 +5,14 @@ import { AIGeneratedContent } from "../types";
 const getAI = () => {
   // The API key must be obtained exclusively from the environment variable process.env.API_KEY.
   // We assume this variable is pre-configured, valid, and accessible.
+  // Note: Vite config handles the 'process.env.API_KEY' replacement.
   return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 export const enhanceTaskContent = async (input: string): Promise<AIGeneratedContent | null> => {
-  const ai = getAI();
-  
   try {
+    const ai = getAI();
+    
     const prompt = `
       You are an expert productivity assistant.
       The user has provided a rough task idea: "${input}".
