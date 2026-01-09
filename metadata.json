@@ -1,0 +1,5 @@
+{
+  "name": "FireTask AI",
+  "description": "A modern task management application featuring Real-time Firebase CRUD operations and Gemini AI-powered task enhancements.",
+  "requestFramePermissions": []
+}
